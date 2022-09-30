@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { User } from './user/entities/user.entity';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { AppService } from './app.service';
           username: process.env.MYSQLDB_USER,
           password: process.env.MYSQLDB_PASSWORD,
           database: process.env.MYSQLDB_DATABASE,
-          entities: [],
+          entities: [User],
           synchronize: true, // Fix me : set this value to false when deploy
         };
       },
