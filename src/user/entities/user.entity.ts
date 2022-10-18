@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   Entity,
   Column,
@@ -14,9 +15,22 @@ export class User {
   @Column({ type: 'varchar', length: 20 })
   name: string;
 
+  @Column({ type: 'varchar', length: 50, unique: true })
+  email: string;
+
+  @Column({ type: 'varchar' })
+  password: string;
+
+  @Column({ type: 'varchar', length: 50 })
+  phoneNumber: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column({ nullable: true })
+  @Exclude()
+  currentHashedRefreshToken?: string;
 }
