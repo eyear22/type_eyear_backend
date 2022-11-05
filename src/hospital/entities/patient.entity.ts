@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Post } from '../../post/entities/post.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { Hospital } from './hospital.entity';
 import { Room } from './room.entity';
 import { Ward } from './ward.entity';
@@ -31,4 +38,7 @@ export class Patient {
 
   @ManyToOne(() => Room, (room) => room.patients)
   room: Room;
+
+  @OneToMany(() => Post, (post) => post.patient)
+  posts: Post[];
 }
