@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { Hospital } from './hospital.entity';
+import { Room } from './room.entity';
 
 @Entity()
 export class Ward {
@@ -11,4 +18,7 @@ export class Ward {
 
   @ManyToOne(() => Hospital, (hospital) => hospital.wards)
   hospital: Hospital;
+
+  @OneToMany(() => Room, (room) => room.ward)
+  rooms: Room[];
 }
