@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { Post } from '../../post/entities/post.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Patient } from './patient.entity';
 import { Ward } from './ward.entity';
@@ -32,4 +33,7 @@ export class Hospital {
 
   @OneToMany(() => Patient, (patient) => patient.hospital)
   patients: Patient[];
+
+  @OneToMany(() => Post, (post) => post.hospital)
+  posts: Post[];
 }
