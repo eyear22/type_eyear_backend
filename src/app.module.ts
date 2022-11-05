@@ -6,6 +6,11 @@ import { AppService } from './app.service';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { Hospital } from './hospital/entities/hospital.entity';
+import { Patient } from './hospital/entities/patient.entity';
+import { Room } from './hospital/entities/room.entity';
+import { Ward } from './hospital/entities/ward.entity';
+import { Post } from './post/entities/post.entity';
 
 @Module({
   imports: [
@@ -18,7 +23,7 @@ import { AuthModule } from './auth/auth.module';
           username: process.env.MYSQLDB_USER,
           password: process.env.MYSQLDB_PASSWORD,
           database: process.env.MYSQLDB_DATABASE,
-          entities: [User],
+          entities: [User, Hospital, Patient, Room, Ward, Post],
           synchronize: true, // Fix me : set this value to false when deploy
         };
       },
