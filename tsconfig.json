@@ -17,6 +17,8 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "allowJs": true,
+    "checkJs": false,
     "lib": ["es5", "es2015.promise", "dom"]
   }
 }
