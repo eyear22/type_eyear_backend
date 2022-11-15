@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { Bucket, Storage } from '@google-cloud/storage';
+import {analyzeVideoTranscript} from "../stt/G_Function";
 
 @Injectable()
 export class PostService {
@@ -22,7 +23,6 @@ export class PostService {
   }
 
   async sendPost(video: Express.Multer.File): Promise<any> {
-    console.log('들어오니?');
     const bucket = this.storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
     const filename = Date.now() + '.mp4';
     // 1. 비디오 클라우드 업로드
@@ -33,7 +33,12 @@ export class PostService {
       console.error(err);
     });
 
+    blobStream.on('finish', () =>{
+      // 2. STT api와 연결 및 텍스트 파일 업로드
+      analyzeVideoTranscript(filename, video.buffer);
+    });
     // 업로드 실행
     blobStream.end(video.buffer);
+
   }
 }
