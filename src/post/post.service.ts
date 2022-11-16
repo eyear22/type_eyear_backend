@@ -7,8 +7,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
-import { Bucket, Storage } from '@google-cloud/storage';
+import { Storage } from '@google-cloud/storage';
 import {analyzeVideoTranscript} from "../stt/G_Function";
+import { CreatePostDto } from './dto/create-post.dto';
+import { Hospital } from 'src/hospital/entities/hospital.entity';
+import { Patient } from 'src/hospital/entities/patient.entity';
+import { User } from 'src/user/entities/user.entity';
+
 
 @Injectable()
 export class PostService {
@@ -17,28 +22,70 @@ export class PostService {
 
     @InjectRepository(Post)
     private postRepository: Repository<Post>,
+
+    @InjectRepository(Hospital)
+    private hospitalRepository: Repository<Hospital>,
+
+    @InjectRepository(Patient)
+    private patientRepository: Repository<Patient>,
+
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+
+
   ) {
     this.postRepository = postRepository;
+    this.hospitalRepository = hospitalRepository;
+    this.patientRepository = patientRepository;
+    this.userRepository = userRepository;
     this.storage = new Storage();
   }
 
-  async sendPost(video: Express.Multer.File): Promise<any> {
+  async sendPost(createpostDto: CreatePostDto, video: Express.Multer.File): Promise<any> {
+    console.log("sendPost");
     const bucket = this.storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
-    const filename = Date.now() + '.mp4';
-    // 1. 비디오 클라우드 업로드
-    const blob = bucket.file(filename);
+    console.log("bucket");
+    const nowDate = Date.now();
+    const filename = nowDate + '.mp4';
+    const blob = bucket.file(`${nowDate}.mp4`);
     const blobStream = blob.createWriteStream();
+    console.log(`${nowDate}.mp4`);
+    console.log(video);
 
     blobStream.on('error', (err) => {
       console.error(err);
     });
 
-    blobStream.on('finish', () =>{
-      // 2. STT api와 연결 및 텍스트 파일 업로드
-      analyzeVideoTranscript(filename, video.buffer);
-    });
-    // 업로드 실행
-    blobStream.end(video.buffer);
+    blobStream.on('finish', async () => {
+      console.log("isFinish");
+      analyzeVideoTranscript(`${nowDate}.mp4`, video.buffer);
 
+      // const hospital = await this.hospitalRepository.findOneBy({
+      //   id: createpostDto.hospital,
+      // })
+
+      const user = await this.userRepository.findOneBy({
+        id: createpostDto.user,
+      })
+
+      // const patient = await this.patientRepository.findOneBy({
+      //   id: createpostDto.patient,
+      // })
+
+      const post = {
+        video: `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.mp4`,
+        text: `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.txt`,
+        check: false,
+        stampNumber: createpostDto.stampNumber,
+        cardNumber: createpostDto.cardNumber,
+        hospital: null,
+        user: user,
+        patient: null
+      };
+
+      this.postRepository.save(post);
+    })
+
+    blobStream.end(video.buffer);
   }
 }
