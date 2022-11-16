@@ -58,7 +58,6 @@ export async function analyzeVideoTranscript(filename, file) {
     videoContext: videoContext,
   };
 
-  console.log(request);
   const [operation] = await client.annotateVideo(request);
   console.log('Waiting for operation to complete...');
   const [operationResult] = await operation.promise();
@@ -74,7 +73,9 @@ export async function analyzeVideoTranscript(filename, file) {
   }
 
   // 추출된 STT 데이터 텍스트 파일 생성
-  const textName = `${Date.now()}.txt`;
+  let text = filename.split('.');
+  text = text.map(element => element.trim());
+  const textName = `${text[0]}.txt`;
   const textPath = `./subtitle/${textName}`;
 
   // 다 생성한 srt 파일을 로컬에 임시 저장
