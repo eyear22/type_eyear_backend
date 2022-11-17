@@ -4,7 +4,7 @@ import { IsBoolean, IsNumber, IsNumberString, IsOptional, IsString } from 'class
 import {IsFile, MemoryStoredFile} from 'nestjs-form-data'
 
 export class CreatePostDto {
-    @ApiProperty({ description: '비디오 파일' })
+    @ApiProperty({ description: '비디오 파일, 백엔드에서는 Express.Multer.File인데 File 형식으로 시도해보기' })
     video: Express.Multer.File;
 
     @IsNumberString()
