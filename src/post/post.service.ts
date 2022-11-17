@@ -42,50 +42,59 @@ export class PostService {
   }
 
   async sendPost(createpostDto: CreatePostDto, video: Express.Multer.File): Promise<any> {
-    console.log("sendPost");
-    const bucket = this.storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
-    console.log("bucket");
-    const nowDate = Date.now();
-    const filename = nowDate + '.mp4';
-    const blob = bucket.file(`${nowDate}.mp4`);
-    const blobStream = blob.createWriteStream();
-    console.log(`${nowDate}.mp4`);
-    console.log(video);
+    const post = {
+      video: `video.mp4`,
+      text: `text.txt`,
+      check: false,
+      stampNumber: createpostDto.stampNumber,
+      cardNumber: createpostDto.cardNumber,
+      hospital: null,
+      user: null,
+      patient: null
+    };
 
-    blobStream.on('error', (err) => {
-      console.error(err);
-    });
+    this.postRepository.save(post);
 
-    blobStream.on('finish', async () => {
-      console.log("isFinish");
-      analyzeVideoTranscript(`${nowDate}.mp4`, video.buffer);
+    // const bucket = this.storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
+    // const nowDate = Date.now();
+    // const filename = nowDate + '.mp4';
+    // const blob = bucket.file(`${nowDate}.mp4`);
+    // const blobStream = blob.createWriteStream();
 
-      // const hospital = await this.hospitalRepository.findOneBy({
-      //   id: createpostDto.hospital,
-      // })
+    // blobStream.on('error', (err) => {
+    //   console.error(err);
+    // });
 
-      const user = await this.userRepository.findOneBy({
-        id: createpostDto.user,
-      })
+    // blobStream.on('finish', async () => {
+    //   analyzeVideoTranscript(`${nowDate}.mp4`, video.buffer);
 
-      // const patient = await this.patientRepository.findOneBy({
-      //   id: createpostDto.patient,
-      // })
+    //   // TODO: 회원가입 및 로그인 기능 가입 후 연결 예정
+    //   // const hospital = await this.hospitalRepository.findOneBy({
+    //   //   id: createpostDto.hospital,
+    //   // })
 
-      const post = {
-        video: `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.mp4`,
-        text: `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.txt`,
-        check: false,
-        stampNumber: createpostDto.stampNumber,
-        cardNumber: createpostDto.cardNumber,
-        hospital: null,
-        user: user,
-        patient: null
-      };
+    //   const user = await this.userRepository.findOneBy({
+    //     id: createpostDto.user,
+    //   })
 
-      this.postRepository.save(post);
-    })
+    //   // const patient = await this.patientRepository.findOneBy({
+    //   //   id: createpostDto.patient,
+    //   // })
 
-    blobStream.end(video.buffer);
+    //   const post = {
+    //     video: `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.mp4`,
+    //     text: `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.txt`,
+    //     check: false,
+    //     stampNumber: createpostDto.stampNumber,
+    //     cardNumber: createpostDto.cardNumber,
+    //     hospital: null,
+    //     user: user,
+    //     patient: null
+    //   };
+
+    //   this.postRepository.save(post);
+    // })
+
+    // blobStream.end(video.buffer);
   }
 }
