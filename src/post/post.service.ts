@@ -8,12 +8,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { Storage } from '@google-cloud/storage';
-import {analyzeVideoTranscript} from "../stt/G_Function";
+import { analyzeVideoTranscript } from '../stt/G_Function';
 import { CreatePostDto } from './dto/create-post.dto';
 import { Hospital } from 'src/hospital/entities/hospital.entity';
 import { Patient } from 'src/hospital/entities/patient.entity';
 import { User } from 'src/user/entities/user.entity';
-
 
 @Injectable()
 export class PostService {
@@ -31,8 +30,6 @@ export class PostService {
 
     @InjectRepository(User)
     private userRepository: Repository<User>,
-
-
   ) {
     this.postRepository = postRepository;
     this.hospitalRepository = hospitalRepository;
@@ -41,7 +38,10 @@ export class PostService {
     this.storage = new Storage();
   }
 
-  async sendPost(createpostDto: CreatePostDto, video: Express.Multer.File): Promise<any> {
+  async sendPost(
+    createpostDto: CreatePostDto,
+    video: Express.Multer.File,
+  ): Promise<any> {
     const post = {
       video: `video.mp4`,
       text: `text.txt`,
@@ -50,10 +50,12 @@ export class PostService {
       cardNumber: createpostDto.cardNumber,
       hospital: null,
       user: null,
-      patient: null
+      patient: null,
     };
 
-    this.postRepository.save(post);
+    const { ...result } = this.postRepository.save(post);
+
+    return result;
 
     // const bucket = this.storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
     // const nowDate = Date.now();

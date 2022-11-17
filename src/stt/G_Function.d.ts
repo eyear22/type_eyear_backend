@@ -1,4 +1,4 @@
 //test.d.ts
-import "./G_Function.js"
+import './G_Function.js';
 
-export function analyzeVideoTranscript(filename:String, video:Buffer): void;
+export function analyzeVideoTranscript(filename: string, video: Buffer): void;

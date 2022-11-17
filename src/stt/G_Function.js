@@ -24,7 +24,7 @@ try {
 
 // DB에 해당 값 받아오려면 인수 변경해야함
 export async function analyzeVideoTranscript(filename, file) {
-  console.log("js 파일 들어왔어?");
+  console.log('js 파일 들어왔어?');
   // const keywordsArray = await Keyword.findOne({
   //   user_id: user_id,
   //   pat_id: patient_id,
@@ -74,7 +74,7 @@ export async function analyzeVideoTranscript(filename, file) {
 
   // 추출된 STT 데이터 텍스트 파일 생성
   let text = filename.split('.');
-  text = text.map(element => element.trim());
+  text = text.map((element) => element.trim());
   const textName = `${text[0]}.txt`;
   const textPath = `./subtitle/${textName}`;
 
@@ -197,7 +197,7 @@ export async function analyzeVideoTranscript(filename, file) {
       console.log('Processing finished!');
       fs.unlink(subtitlePath, function (err) {
         if (err) {
-            console.log('Error : ', err);
+          console.log('Error : ', err);
         } else {
           console.log('삭제 완료!');
         }
