@@ -12,7 +12,7 @@ export class Post extends Common {
   @Column({ type: 'varchar' })
   text: string;
 
-  @Column()
+  @Column({ default: false })
   check: boolean;
 
   @Column({ type: 'int' })
