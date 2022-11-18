@@ -3,13 +3,14 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Param,
   Post,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { json } from 'stream/consumers';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EmailCheckDto } from './dto/email-check.dto';
@@ -42,5 +43,20 @@ export class UserController {
   })
   async emailCheck(@Query() emailCheckDto: EmailCheckDto) {
     return await this.userService.emailCheck(emailCheckDto);
+  }
+
+  @Get('posts')
+  // @UseGuards(JwtAuthGuard) // fix: 로그인 연결 후 수정
+  @ApiOperation({
+    summary: '개인 보낸 우편 리스트 API',
+    description: '보낸 우편 리스트 확인',
+  })
+  @ApiCreatedResponse({
+    description: '개인이 환자에게 보낸 우편 리스트 확인',
+    type: json,
+  })
+  async getPosts(@Res() res: Response) {
+    const posts = await this.userService.getPosts();
+    return res.status(HttpStatus.OK).json(posts);
   }
 }
