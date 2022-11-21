@@ -1,5 +1,14 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Request, Response } from 'express';
 import { json } from 'stream/consumers';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -18,8 +27,14 @@ export class AuthController {
     description: 'email과 password 정보를 통해 로그인을 진행한다',
   })
   @ApiCreatedResponse({ description: '로그인', type: json })
-  async login(@Req() req) {
-    return await this.authService.login(req.user);
+  async login(@Req() req: Request, @Res() res: Response) {
+    const tokens = await this.authService.login(req.user);
+    res.setHeader('Authorization', tokens.access_token);
+    res.cookie('jwt', tokens, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 1day
+    });
+    return res.status(HttpStatus.OK).json({ message: 'success' });
   }
 
   @UseGuards(JwtAuthGuard)
@@ -35,7 +50,13 @@ export class AuthController {
   })
   @ApiCreatedResponse({ description: 'access token 재발급', type: json })
   @Get('/refresh')
-  async getToken(@Req() req) {
-    return await this.authService.refreshTokens(req.user);
+  async getToken(@Req() req: Request, @Res() res: Response) {
+    const tokens = await this.authService.refreshToken(req.user);
+    res.cookie('jwt', tokens, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 1day
+    });
+
+    return res.status(HttpStatus.OK).json({ message: 'success' });
   }
 }
