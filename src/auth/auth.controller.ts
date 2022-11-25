@@ -7,10 +7,16 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { json } from 'stream/consumers';
 import { AuthService } from './auth.service';
+import { LoginUserDto } from './dto/login.user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -22,6 +28,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @ApiBody({ type: LoginUserDto })
   @ApiOperation({
     summary: '사용자 로그인 API',
     description: 'email과 password 정보를 통해 로그인을 진행한다',
