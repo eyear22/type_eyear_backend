@@ -1,23 +1,29 @@
 import {
-  Bind,
   Body,
   Controller,
-  FileTypeValidator,
-  MaxFileSizeValidator,
-  ParseFilePipe,
   HttpStatus,
   Post,
   Req,
   Res,
   UploadedFile,
   UseInterceptors,
+  Get,
+  Param,
+  BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Response } from 'express';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostService } from './post.service';
-import { json } from 'stream/consumers';
+import { PostDetailParamDto } from './dto/post-detail-param.dto';
+import { PostDetailResponse } from './dto/post-detail-response.dto';
 
 @Controller('post')
 @ApiTags('Post API')
@@ -37,5 +43,32 @@ export class PostController {
   ) {
     const post = this.postService.sendPost(createpostDto, video);
     return res.status(HttpStatus.CREATED).json(post);
+  }
+
+  @Get('detail/:postId')
+  // @UseGuards(JwtAuthGuard) // fix: 로그인 연결 후 수정
+  @ApiOperation({
+    summary: '개인 보낸 우편 상세 페이지 확인 API',
+    description: '보낸 우편 상세 확인',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'success',
+    type: PostDetailResponse,
+  })
+  async getPostDetail(
+    @Param() param: PostDetailParamDto,
+    @Res() res: Response,
+  ) {
+    if (!param) {
+      return new BadRequestException('required parameter');
+    }
+
+    const post = await this.postService.getPostDetail(param.postId);
+    const result = {
+      message: 'success',
+      post: post,
+    };
+    return res.status(HttpStatus.OK).send(result);
   }
 }

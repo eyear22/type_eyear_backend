@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   HttpStatus,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -72,5 +73,18 @@ export class PostService {
     });
 
     blobStream.end(video.buffer);
+  }
+
+  async getPostDetail(postId: number) {
+    // todo: user 정보 일치하는지 확인
+    const post = await this.postRepository.findOneBy({ id: postId });
+    if (!post) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: ['not existed post'],
+        error: 'Not Found',
+      });
+    }
+    return post;
   }
 }
