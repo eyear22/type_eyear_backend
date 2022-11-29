@@ -35,13 +35,15 @@ export class AuthController {
     type: BaseResponse,
   })
   async login(@Req() req: Request, @Res() res: Response) {
-    const tokens = await this.authService.login(req.user);
-    res.setHeader('Authorization', tokens.access_token);
-    res.cookie('jwt', tokens, {
+    const data = await this.authService.login(req.user);
+    res.setHeader('Authorization', data.tokens.access_token);
+    res.cookie('jwt', data.tokens, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1day
     });
-    return res.status(HttpStatus.OK).send({ message: 'success' });
+    return res
+      .status(HttpStatus.OK)
+      .send({ message: 'success', user: data.user });
   }
 
   @UseGuards(JwtAuthGuard)
