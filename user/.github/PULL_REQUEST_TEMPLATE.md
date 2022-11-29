@@ -1,3 +1,0 @@
-# 📝 Description
-
-# 💻 How To Test

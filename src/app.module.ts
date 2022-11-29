@@ -11,6 +11,9 @@ import { Patient } from './hospital/entities/patient.entity';
 import { Room } from './hospital/entities/room.entity';
 import { Ward } from './hospital/entities/ward.entity';
 import { Post } from './post/entities/post.entity';
+import { PostController } from './post/post.controller';
+import { PostService } from './post/post.service';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -31,6 +34,7 @@ import { Post } from './post/entities/post.entity';
     ConfigModule.forRoot(),
     UserModule,
     AuthModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService],
