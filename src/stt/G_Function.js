@@ -6,7 +6,10 @@ const { format, parseISO, intervalToDuration } = require('date-fns');
 const ffmpeg = require('fluent-ffmpeg');
 
 const { Storage } = require('@google-cloud/storage');
-const storage = new Storage();
+const storage = new Storage({
+  projectId: `${process.env.PROJECT_ID}`,
+  keyFilename: `${process.env.KEYPATH}`
+});
 
 const input_path = 'input.mp4';
 const output_path = 'output.mp4';
