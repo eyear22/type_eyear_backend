@@ -29,8 +29,6 @@ services:
       - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
     depends_on:
       - db
-    networks:
-      - backend
 
 networks:
   backend:
