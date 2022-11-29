@@ -1,19 +1,10 @@
 import { Exclude } from 'class-transformer';
 import { Post } from '../../post/entities/post.entity';
-import {
-  Entity,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
+import { Common } from '../../entities/common.entity';
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class User extends Common {
   @Column({ type: 'varchar', length: 20 })
   name: string;
 
@@ -25,12 +16,6 @@ export class User {
 
   @Column({ type: 'varchar', length: 50 })
   phoneNumber: string;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
 
   @Column({ nullable: true })
   @Exclude()

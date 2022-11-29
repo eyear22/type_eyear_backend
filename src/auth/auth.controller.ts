@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { json } from 'stream/consumers';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Request, Response } from 'express';
+import { BaseResponse } from 'src/utils/swagger/base-response.dto';
+
 import { AuthService } from './auth.service';
+import { LoginUserDto } from './dto/login.user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -13,13 +24,24 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @ApiBody({ type: LoginUserDto })
   @ApiOperation({
     summary: '사용자 로그인 API',
     description: 'email과 password 정보를 통해 로그인을 진행한다',
   })
-  @ApiCreatedResponse({ description: '로그인', type: json })
-  async login(@Req() req) {
-    return await this.authService.login(req.user);
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'success',
+    type: BaseResponse,
+  })
+  async login(@Req() req: Request, @Res() res: Response) {
+    const tokens = await this.authService.login(req.user);
+    res.setHeader('Authorization', tokens.access_token);
+    res.cookie('jwt', tokens, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 1day
+    });
+    return res.status(HttpStatus.OK).send({ message: 'success' });
   }
 
   @UseGuards(JwtAuthGuard)
@@ -31,11 +53,22 @@ export class AuthController {
   @UseGuards(JwtRefreshAuthGuard)
   @ApiOperation({
     summary: 'Access Token 재발급 API',
-    description: 'Refresh Token을 사용하여 Access Token을 재발급 받는다',
+    description:
+      '[쿠키 필수] Refresh Token을 사용하여 Access Token을 재발급 받는다',
   })
-  @ApiCreatedResponse({ description: 'access token 재발급', type: json })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'success',
+    type: BaseResponse,
+  })
   @Get('/refresh')
-  async getToken(@Req() req) {
-    return await this.authService.refreshTokens(req.user);
+  async getToken(@Req() req: Request, @Res() res: Response) {
+    const tokens = await this.authService.refreshToken(req.user);
+    res.cookie('jwt', tokens, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 1day
+    });
+
+    return res.status(HttpStatus.OK).send({ message: 'success' });
   }
 }
