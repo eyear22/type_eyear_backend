@@ -54,17 +54,7 @@ export class AuthService {
     );
   }
 
-  async refreshTokens(user: any) {
-    const isExist = await this.userRepository.findOneBy({
-      id: user.id,
-    });
-    if (!isExist || !isExist.currentHashedRefreshToken)
-      throw new ForbiddenException('Invalid credentials');
-    const rtMatches = bcrypt.compare(
-      user.refresh_token,
-      isExist.currentHashedRefreshToken,
-    );
-    if (!rtMatches) throw new ForbiddenException('Invalid credentials');
+  async refreshToken(user: any) {
     const tokens = await this.getTokens(user.id, user.email);
     await this.updateRtHash(user.id, tokens.refresh_token);
     return tokens;
@@ -96,5 +86,21 @@ export class AuthService {
       access_token,
       refresh_token,
     };
+  }
+
+  async validRefreshToken(email: string, refresh_token: string) {
+    const user = await this.userRepository.findOneBy({
+      email,
+    });
+    if (!user || !user.currentHashedRefreshToken)
+      throw new ForbiddenException('Invalid credentials');
+    const rtMatches = bcrypt.compare(
+      refresh_token,
+      user.currentHashedRefreshToken,
+    );
+    if (!rtMatches) throw new ForbiddenException('Invalid credentials');
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRtHash(user.id, tokens.refresh_token);
+    return user;
   }
 }

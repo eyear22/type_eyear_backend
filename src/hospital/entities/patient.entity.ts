@@ -1,20 +1,12 @@
 import { Post } from '../../post/entities/post.entity';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { Hospital } from './hospital.entity';
 import { Room } from './room.entity';
 import { Ward } from './ward.entity';
+import { Common } from '../../entities/common.entity';
 
 @Entity()
-export class Patient {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Patient extends Common {
   @Column({ type: 'varchar', length: 50 })
   name: string;
 

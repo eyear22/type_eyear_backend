@@ -1,14 +1,12 @@
-import { Exclude } from 'class-transformer';
 import { Post } from '../../post/entities/post.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { Patient } from './patient.entity';
 import { Ward } from './ward.entity';
+import { Common } from 'src/entities/common.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
-export class Hospital {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Hospital extends Common {
   @Column({ type: 'varchar', length: 50 })
   name: string;
 

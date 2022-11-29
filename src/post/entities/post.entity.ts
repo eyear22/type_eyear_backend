@@ -1,20 +1,18 @@
 import { Hospital } from '../../hospital/entities/hospital.entity';
-import { User } from '../../user/entities/user.entity';
 import { Patient } from '../../hospital/entities/patient.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { User } from '../../user/entities/user.entity';
+import { Entity, Column, ManyToOne } from 'typeorm';
+import { Common } from '../../entities/common.entity';
 
 @Entity()
-export class Post {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Post extends Common {
   @Column({ type: 'varchar' })
   video: string;
 
   @Column({ type: 'varchar' })
   text: string;
 
-  @Column()
+  @Column({ default: false })
   check: boolean;
 
   @Column({ type: 'int' })

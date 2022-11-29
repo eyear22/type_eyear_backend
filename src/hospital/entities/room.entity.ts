@@ -1,18 +1,10 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Common } from '../../entities/common.entity';
+import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { Patient } from './patient.entity';
 import { Ward } from './ward.entity';
 
 @Entity()
-export class Room {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Room extends Common {
   @Column({ type: 'int' })
   roomNumber: number;
 

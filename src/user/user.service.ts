@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcrypt';
+import { Post } from 'src/post/entities/post.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EmailCheckDto } from './dto/email-check.dto';
@@ -16,8 +17,11 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Post)
+    private postRepository: Repository<Post>,
   ) {
     this.userRepository = userRepository;
+    this.postRepository = postRepository;
   }
 
   async createUser(requestDto: CreateUserDto): Promise<any> {
@@ -59,5 +63,19 @@ export class UserService {
       result['isValidEmail'] = true;
     }
     return result;
+  }
+
+  async getPosts(): Promise<Post> {
+    // const user = this.userRepository.findOneBy({ email });
+    const posts = await this.postRepository
+      .createQueryBuilder('post')
+      .select('post.id')
+      .addSelect('post.stampNumber')
+      .addSelect('post.cardNumber')
+      .addSelect('post.createdAt')
+      // .where('post.user = :user', { user }) // fix: 로그인 연결 후 user 정보 이용해서 검색
+      .execute();
+
+    return posts;
   }
 }
