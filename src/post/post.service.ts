@@ -36,7 +36,10 @@ export class PostService {
     this.hospitalRepository = hospitalRepository;
     this.patientRepository = patientRepository;
     this.userRepository = userRepository;
-    this.storage = new Storage();
+    this.storage = new Storage({
+      projectId: `${process.env.PROJECT_ID}`,
+      keyFilename: `${process.env.KEYPATH}`
+    });
   }
 
   async sendPost(
