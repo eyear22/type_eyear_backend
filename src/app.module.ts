@@ -11,9 +11,9 @@ import { Patient } from './hospital/entities/patient.entity';
 import { Room } from './hospital/entities/room.entity';
 import { Ward } from './hospital/entities/ward.entity';
 import { Post } from './post/entities/post.entity';
-import { PostController } from './post/post.controller';
-import { PostService } from './post/post.service';
 import { PostModule } from './post/post.module';
+import { ReservationModule } from './reservation/reservation.module';
+import { Reservation } from './reservation/entities/reservation.entity';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { PostModule } from './post/post.module';
           username: process.env.MYSQLDB_USER,
           password: process.env.MYSQLDB_PASSWORD,
           database: process.env.MYSQLDB_DATABASE,
-          entities: [User, Hospital, Patient, Room, Ward, Post],
+          entities: [User, Hospital, Patient, Room, Ward, Post, Reservation],
           synchronize: true, // Fix me : set this value to false when deploy
         };
       },
@@ -35,6 +35,7 @@ import { PostModule } from './post/post.module';
     UserModule,
     AuthModule,
     PostModule,
+    ReservationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
