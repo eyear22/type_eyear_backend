@@ -1,4 +1,4 @@
-
+/* eslint-disable @typescript-eslint/no-var-requires */
 // Imports the Google Cloud Video Intelligence library
 const videoIntelligence = require('@google-cloud/video-intelligence');
 const fs = require('fs');
