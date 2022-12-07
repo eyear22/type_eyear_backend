@@ -38,7 +38,7 @@ export class PostService {
     this.userRepository = userRepository;
     this.storage = new Storage({
       projectId: `${process.env.PROJECT_ID}`,
-      keyFilename: `${process.env.KEYPATH}`
+      keyFilename: `${process.env.KEYPATH}`,
     });
   }
 

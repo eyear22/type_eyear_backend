@@ -6,8 +6,11 @@ import { Common } from '../../entities/common.entity';
 
 @Entity()
 export class Reservation extends Common {
-  @Column({ type: Date })
+  @Column({ type: Date, nullable: true })
   reservationDate: Date;
+
+  @Column({ type: 'int' })
+  timetableIndex: number;
 
   @Column({ type: 'boolean' })
   faceToface: boolean;
