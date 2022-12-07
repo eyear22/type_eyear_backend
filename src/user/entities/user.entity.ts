@@ -1,8 +1,17 @@
 import { Exclude } from 'class-transformer';
 import { Post } from '../../post/entities/post.entity';
-import { Entity, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 import { Common } from '../../entities/common.entity';
 import { Reservation } from 'src/reservation/entities/reservation.entity';
+import { Patient } from 'src/hospital/entities/patient.entity';
+import { Hospital } from 'src/hospital/entities/hospital.entity';
 
 @Entity()
 export class User extends Common {
@@ -27,4 +36,11 @@ export class User extends Common {
 
   @OneToMany(() => Reservation, (reservation) => reservation.user)
   reservations: Reservation[];
+
+  @OneToOne(() => Patient)
+  @JoinColumn()
+  patient: Patient;
+
+  @ManyToOne(() => Hospital, (hospital) => hospital.users)
+  hospital: Hospital;
 }
