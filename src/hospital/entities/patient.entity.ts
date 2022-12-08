@@ -5,6 +5,7 @@ import { Room } from './room.entity';
 import { Ward } from './ward.entity';
 import { Common } from '../../entities/common.entity';
 import { Reservation } from 'src/reservation/entities/reservation.entity';
+import { Keyword } from 'src/keywords/entities/keyword.entity';
 
 @Entity()
 export class Patient extends Common {
@@ -37,4 +38,7 @@ export class Patient extends Common {
 
   @OneToMany(() => Reservation, (reservation) => reservation.patient)
   reservations: Reservation[];
+
+  @OneToMany(() => Keyword, (keyword) => keyword.patient)
+  keywords: Keyword[];
 }

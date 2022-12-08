@@ -12,6 +12,7 @@ import { Common } from '../../entities/common.entity';
 import { Reservation } from 'src/reservation/entities/reservation.entity';
 import { Patient } from 'src/hospital/entities/patient.entity';
 import { Hospital } from 'src/hospital/entities/hospital.entity';
+import { Keyword } from 'src/keywords/entities/keyword.entity';
 
 @Entity()
 export class User extends Common {
@@ -43,4 +44,7 @@ export class User extends Common {
 
   @ManyToOne(() => Hospital, (hospital) => hospital.users)
   hospital: Hospital;
+
+  @OneToMany(() => Keyword, (keyword) => keyword.user)
+  keywords: Keyword[];
 }
