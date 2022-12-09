@@ -8,11 +8,17 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ReservationResponse } from './dto/reservation-response.dto';
 
 @Controller('reservation')
 @ApiTags('Reservation API')
@@ -26,16 +32,16 @@ export class ReservationController {
     description: '예약 등록 ',
   })
   @ApiCreatedResponse({ description: '예약 신청한다.', type: String })
-  createReservation(
+  async createReservation(
     @Body() createReservationDto: CreateReservationDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const reservation = this.reservationService.createReservation(
+    const reservation = await this.reservationService.createReservation(
       createReservationDto,
       req.user.id,
     );
 
-    return res.status(HttpStatus.CREATED).json(reservation);
+    return res.status(HttpStatus.CREATED).send('ok');
   }
 }

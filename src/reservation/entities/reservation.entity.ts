@@ -15,8 +15,8 @@ export class Reservation extends Common {
   @Column({ type: 'boolean' })
   faceToface: boolean;
 
-  @Column({ type: 'boolean', default: false })
-  approveCheck: boolean;
+  @Column({ type: 'int', default: 0 })
+  approveCheck: number;
 
   @ManyToOne(() => Hospital, (hospital) => hospital.reservations)
   hospital: Hospital;
