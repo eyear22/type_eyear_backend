@@ -19,12 +19,6 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
 
-  @Get('')
-  @UseGuards(JwtAuthGuard)
-  async getTocken(@Req() req: Request) {
-    console.log(req.user);
-  }
-
   @Post('')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
@@ -37,7 +31,6 @@ export class ReservationController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    console.log(req.user);
     const reservation = this.reservationService.createReservation(
       createReservationDto,
       req.user.id,

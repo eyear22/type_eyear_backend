@@ -30,7 +30,7 @@ export class AuthService {
     console.log(password, user.password);
     const isMatch = await bcrypt.compare(password, user.password);
 
-    if (password == user.password) {
+    if (isMatch) {
       const { password, ...result } = user;
       return result;
     } else {

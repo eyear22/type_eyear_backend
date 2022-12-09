@@ -32,19 +32,6 @@ export class ReservationService {
     createReservationDto: CreateReservationDto,
     userId: number,
   ): Promise<any> {
-    const isExist = await this.reservationRepository.findOneBy({
-      reservationDate: createReservationDto.reservationDate,
-      timetableIndex: createReservationDto.timetableIndex,
-    });
-
-    if (isExist) {
-      throw new ForbiddenException({
-        statusCode: HttpStatus.FORBIDDEN,
-        message: ['Already the others have reservation'],
-        error: 'Forbidden',
-      });
-    }
-
     const user = await this.userRepository.find({
       where: {
         id: userId,
@@ -55,9 +42,27 @@ export class ReservationService {
       },
     });
 
+    const hospital = await this.hospitalRepository.findOneBy({
+      id: user[0].hospital.id,
+    });
+
+    const isExist = await this.reservationRepository.findOneBy({
+      reservationDate: createReservationDto.reservationDate,
+      timetableIndex: createReservationDto.timetableIndex,
+      hospital: hospital,
+    });
+
+    if (isExist) {
+      throw new ForbiddenException({
+        statusCode: HttpStatus.FORBIDDEN,
+        message: ['Already the others have reservation'],
+        error: 'Forbidden',
+      });
+    }
+
     const overlapReservation = await this.reservationRepository.findOneBy({
       reservationDate: createReservationDto.reservationDate,
-      user: null, //user,
+      user: user[0],
     });
 
     if (overlapReservation) {
@@ -67,9 +72,6 @@ export class ReservationService {
         error: 'Forbidden',
       });
     }
-
-    console.log(user[0].hospital);
-    console.log(createReservationDto.reservationDate);
 
     const result = await this.reservationRepository
       .createQueryBuilder()
