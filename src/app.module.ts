@@ -15,6 +15,7 @@ import { PostModule } from './post/post.module';
 import { ReservationModule } from './reservation/reservation.module';
 import { Reservation } from './reservation/entities/reservation.entity';
 import { Keyword } from './keywords/entities/keyword.entity';
+import { KeywordsModule } from './keywords/keywords.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { Keyword } from './keywords/entities/keyword.entity';
     AuthModule,
     PostModule,
     ReservationModule,
+    KeywordsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
