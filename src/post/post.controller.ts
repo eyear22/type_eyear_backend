@@ -18,12 +18,13 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostService } from './post.service';
 import { PostDetailParamDto } from './dto/post-detail-param.dto';
 import { PostDetailResponse } from './dto/post-detail-response.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('post')
 @ApiTags('Post API')
@@ -40,13 +41,14 @@ export class PostController {
     @Body() createpostDto: CreatePostDto,
     @UploadedFile() video: Express.Multer.File,
     @Res() res: Response,
+    @Req() req: Request,
   ) {
-    const post = this.postService.sendPost(createpostDto, video);
+    const post = this.postService.sendPost(createpostDto, video, req.user.id);
     return res.status(HttpStatus.CREATED).json(post);
   }
 
   @Get('detail/:postId')
-  // @UseGuards(JwtAuthGuard) // fix: 로그인 연결 후 수정
+  @UseGuards(JwtAuthGuard) // fix: 로그인 연결 후 수정
   @ApiOperation({
     summary: '개인 보낸 우편 상세 페이지 확인 API',
     description: '보낸 우편 상세 확인',

@@ -38,19 +38,30 @@ export class PostService {
     this.userRepository = userRepository;
     this.storage = new Storage({
       projectId: `${process.env.PROJECT_ID}`,
-      keyFilename: `${process.env.KEYPATH}`
+      keyFilename: `${process.env.KEYPATH}`,
     });
   }
 
   async sendPost(
     createpostDto: CreatePostDto,
     video: Express.Multer.File,
+    userId: number,
   ): Promise<any> {
     const bucket = this.storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
     const nowDate = Date.now();
     const filename = nowDate + '.mp4';
     const blob = bucket.file(`${nowDate}.mp4`);
     const blobStream = blob.createWriteStream();
+
+    const user = await this.userRepository.find({
+      where: {
+        id: userId,
+      },
+      relations: {
+        patient: true,
+        hospital: true,
+      },
+    });
 
     blobStream.on('error', (err) => {
       console.error(err);
@@ -59,18 +70,23 @@ export class PostService {
     blobStream.on('finish', async () => {
       await analyzeVideoTranscript(`${filename}`, video.buffer);
 
-      const post = {
-        video: `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.mp4`,
-        text: `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.txt`,
-        check: false,
-        stampNumber: createpostDto.stampNumber,
-        cardNumber: createpostDto.cardNumber,
-        hospital: null,
-        user: null,
-        patient: null,
-      };
-
-      const { ...result } = this.postRepository.save(post);
+      const result = await this.postRepository
+        .createQueryBuilder()
+        .insert()
+        .into(Post)
+        .values({
+          video: () =>
+            `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.mp4`,
+          text: () =>
+            `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.txt`,
+          check: () => `${false}`,
+          stampNumber: () => `${createpostDto.stampNumber}`,
+          cardNumber: () => `'${createpostDto.cardNumber}'`,
+          hospital: () => `'${user[0].patient.id}'`,
+          user: () => `'${user[0].patient.id}'`,
+          patient: () => `'${user[0].patient.id}'`,
+        })
+        .execute();
 
       return result;
     });
