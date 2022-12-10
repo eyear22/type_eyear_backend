@@ -114,4 +114,27 @@ export class KeywordsService {
       }
     });
   }
+
+  isSingleCharacter(text: string) {
+    const strGa = 44032;
+    const strHih = 55203;
+
+    const lastStrCode = text.charCodeAt(text.length - 1);
+
+    if (lastStrCode < strGa || lastStrCode > strHih) {
+      return false; // 한글이 아닐 경우 false 반환
+    }
+    return (lastStrCode - strGa) % 28 === 0;
+  }
+
+  addPostposition(text: string) {
+    const word1 = text + (this.isSingleCharacter(text) ? '' : '이');
+    const word2 = text + (this.isSingleCharacter(text) ? '는' : '이는');
+    const word3 = text + (this.isSingleCharacter(text) ? '가' : '이가');
+    const word4 = text + (this.isSingleCharacter(text) ? '랑' : '이랑');
+    const word5 = text + (this.isSingleCharacter(text) ? '의' : '이의');
+    const word6 = text + (this.isSingleCharacter(text) ? '에' : '이에');
+    const words = [word1, word2, word3, word4, word5, word6];
+    return words;
+  }
 }

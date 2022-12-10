@@ -16,6 +16,7 @@ import { ReservationModule } from './reservation/reservation.module';
 import { Reservation } from './reservation/entities/reservation.entity';
 import { Keyword } from './keywords/entities/keyword.entity';
 import { KeywordsModule } from './keywords/keywords.module';
+import { NameWord } from './keywords/entities/nameWord.entity';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { KeywordsModule } from './keywords/keywords.module';
             Post,
             Reservation,
             Keyword,
+            NameWord,
           ],
           synchronize: true, // Fix me : set this value to false when deploy
         };

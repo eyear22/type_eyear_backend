@@ -6,6 +6,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcrypt';
+import { NameWord } from 'src/keywords/entities/nameWord.entity';
+import { KeywordsService } from 'src/keywords/keywords.service';
 import { Post } from 'src/post/entities/post.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -19,9 +21,14 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(Post)
     private postRepository: Repository<Post>,
+    @InjectRepository(NameWord)
+    private nameWordRepository: Repository<NameWord>,
+
+    private readonly keywordService: KeywordsService,
   ) {
     this.userRepository = userRepository;
     this.postRepository = postRepository;
+    this.nameWordRepository = nameWordRepository;
   }
 
   async createUser(requestDto: CreateUserDto): Promise<any> {
@@ -40,6 +47,21 @@ export class UserService {
     requestDto.password = await hash(requestDto.password, 10); // FIX ME : use env
 
     const { password, ...result } = await this.userRepository.save(requestDto);
+
+    const nameResult = await this.keywordService.addPostposition(result.name);
+
+    for (const name of nameResult) {
+      await this.nameWordRepository
+        .createQueryBuilder()
+        .insert()
+        .into(NameWord)
+        .values({
+          word: () => `'${name}'`,
+          user: () => `'${result.id}'`,
+        })
+        .execute();
+    }
+
     return result;
   }
 
