@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcrypt';
+import { Hospital } from 'src/hospital/entities/hospital.entity';
 import { Patient } from 'src/hospital/entities/patient.entity';
 import { NameWord } from 'src/keywords/entities/nameWord.entity';
 import { KeywordsService } from 'src/keywords/keywords.service';
@@ -27,6 +28,8 @@ export class UserService {
     private nameWordRepository: Repository<NameWord>,
     @InjectRepository(Patient)
     private patientRepository: Repository<Patient>,
+    @InjectRepository(Hospital)
+    private hospitalRepository: Repository<Hospital>,
 
     private readonly keywordService: KeywordsService,
   ) {
@@ -34,6 +37,7 @@ export class UserService {
     this.postRepository = postRepository;
     this.nameWordRepository = nameWordRepository;
     this.patientRepository = patientRepository;
+    this.hospitalRepository = hospitalRepository;
   }
 
   async createUser(requestDto: CreateUserDto): Promise<any> {
@@ -160,5 +164,16 @@ export class UserService {
     }
 
     return patient[0];
+  }
+
+  async getHospitalList() {
+    return await this.hospitalRepository.find({
+      select: {
+        id: true,
+        name: true,
+        address: true,
+        phoneNumber: true,
+      },
+    });
   }
 }

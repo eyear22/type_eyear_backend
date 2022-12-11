@@ -20,6 +20,7 @@ import { CreateUserResponse } from './dto/create-user-response.dto';
 import { PostsResponse } from './dto/posts-response.dto';
 import { ConnectPatientDto } from './dto/connect-patient.dto';
 import { ConnectPatientResponse } from './dto/connect-patient-response.dto';
+import { HospitalListResponse } from './dto/hospital-list-response.dto';
 
 @Controller('user')
 @ApiTags('User API')
@@ -110,6 +111,25 @@ export class UserController {
     const result = {
       message: 'success',
       patient: patient,
+    };
+    return res.status(HttpStatus.OK).send(result);
+  }
+
+  @Get('hospitals')
+  @ApiOperation({
+    summary: '아이어 등록 병원 리스트 API',
+    description: '아이어에 등록된 병원 리스트를 조회하는 API',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'success',
+    type: HospitalListResponse,
+  })
+  async getHospitalList(@Res() res: Response) {
+    const hospitals = await this.userService.getHospitalList();
+    const result = {
+      message: 'success',
+      hospitals: hospitals,
     };
     return res.status(HttpStatus.OK).send(result);
   }
