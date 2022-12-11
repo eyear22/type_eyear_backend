@@ -5,19 +5,21 @@ import {
   HttpStatus,
   Post,
   Query,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-
 import { CreateUserDto } from './dto/create-user.dto';
 import { EmailCheckDto } from './dto/email-check.dto';
 import { UserService } from './user.service';
 import { EamilCheckResponse } from './dto/email-check-response.dto';
 import { CreateUserResponse } from './dto/create-user-response.dto';
 import { PostsResponse } from './dto/posts-response.dto';
+import { ConnectPatientDto } from './dto/connect-patient.dto';
+import { ConnectPatientResponse } from './dto/connect-patient-response.dto';
 
 @Controller('user')
 @ApiTags('User API')
@@ -81,6 +83,33 @@ export class UserController {
     const result = {
       message: 'success',
       posts: posts,
+    };
+    return res.status(HttpStatus.OK).send(result);
+  }
+
+  @Post('patient')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '수신인 등록 API',
+    description: '개인 수신인 등록(환자 연결) API',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'success',
+    type: ConnectPatientResponse,
+  })
+  async connectPatient(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() requestDto: ConnectPatientDto,
+  ) {
+    const patient = await this.userService.connectPatient(
+      req.user.id,
+      requestDto,
+    );
+    const result = {
+      message: 'success',
+      patient: patient,
     };
     return res.status(HttpStatus.OK).send(result);
   }
