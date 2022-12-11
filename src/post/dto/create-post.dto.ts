@@ -1,13 +1,5 @@
-import { UploadedFile } from '@nestjs/common/decorators';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsNumber,
-  IsNumberString,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-import { IsFile, MemoryStoredFile } from 'nestjs-form-data';
+import { IsNumberString } from 'class-validator';
 
 export class CreatePostDto {
   @ApiProperty({
