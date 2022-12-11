@@ -12,6 +12,7 @@ import { Request, Response } from 'express';
 import { BaseResponse } from 'src/utils/swagger/base-response.dto';
 
 import { AuthService } from './auth.service';
+import { LoginResponse } from './dto/login-response.dto';
 import { LoginUserDto } from './dto/login.user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
@@ -32,18 +33,15 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'success',
-    type: BaseResponse,
+    type: LoginResponse,
   })
   async login(@Req() req: Request, @Res() res: Response) {
     const data = await this.authService.login(req.user);
     res.setHeader('Authorization', data.tokens.access_token);
-    res.cookie('jwt', data.tokens, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 1day
-    });
+
     return res
       .status(HttpStatus.OK)
-      .send({ message: 'success', user: data.user });
+      .send({ message: 'success', tokens: data.tokens, user: data.user });
   }
 
   @UseGuards(JwtAuthGuard)
@@ -53,24 +51,8 @@ export class AuthController {
   }
 
   @UseGuards(JwtRefreshAuthGuard)
-  @ApiOperation({
-    summary: 'Access Token 재발급 API',
-    description:
-      '[쿠키 필수] Refresh Token을 사용하여 Access Token을 재발급 받는다',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'success',
-    type: BaseResponse,
-  })
   @Get('/refresh')
-  async getToken(@Req() req: Request, @Res() res: Response) {
-    const tokens = await this.authService.refreshToken(req.user);
-    res.cookie('jwt', tokens, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 1day
-    });
-
-    return res.status(HttpStatus.OK).send({ message: 'success' });
+  async getToken(@Req() req) {
+    return await this.authService.refreshTokens(req.user);
   }
 }
