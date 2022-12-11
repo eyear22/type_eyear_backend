@@ -176,4 +176,33 @@ export class UserService {
       },
     });
   }
+
+  async getPatient(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: { patient: true, hospital: true },
+    });
+
+    if (user.patient) {
+      const result = {
+        user: { id: userId },
+        patient: {
+          id: user.patient.id,
+          name: user.patient.name,
+          number: user.patient.patNumber,
+          inDate: user.patient.inDate,
+          infoNumber: user.patient.infoNumber.substring(0, 8) + '******',
+        },
+        hospital: {
+          id: user.hospital.id,
+          name: user.hospital.name,
+          address: user.hospital.address,
+          phoneNumber: user.hospital.phoneNumber,
+        },
+      };
+      return result;
+    } else {
+      return null;
+    }
+  }
 }
