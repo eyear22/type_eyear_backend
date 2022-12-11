@@ -31,6 +31,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 @UseInterceptors(FileInterceptor('video'))
 export class PostController {
   constructor(private readonly postService: PostService) {}
+  @UseGuards(JwtAuthGuard)
   @Post('')
   @ApiOperation({
     summary: '편지 보내기 API',

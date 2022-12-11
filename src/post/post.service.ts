@@ -1,41 +1,34 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { Storage } from '@google-cloud/storage';
 import { analyzeVideoTranscript } from '../stt/G_Function';
 import { CreatePostDto } from './dto/create-post.dto';
-import { Hospital } from 'src/hospital/entities/hospital.entity';
-import { Patient } from 'src/hospital/entities/patient.entity';
 import { User } from 'src/user/entities/user.entity';
+import { Keyword } from 'src/keywords/entities/keyword.entity';
+import { NameWord } from 'src/keywords/entities/nameWord.entity';
+import { KeywordsService } from 'src/keywords/keywords.service';
 
 @Injectable()
 export class PostService {
   constructor(
     private storage: Storage,
-
     @InjectRepository(Post)
     private postRepository: Repository<Post>,
-
-    @InjectRepository(Hospital)
-    private hospitalRepository: Repository<Hospital>,
-
-    @InjectRepository(Patient)
-    private patientRepository: Repository<Patient>,
-
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Keyword)
+    private keywordRepository: Repository<Keyword>,
+    @InjectRepository(NameWord)
+    private nameWordRepository: Repository<NameWord>,
+
+    private readonly keywordService: KeywordsService,
   ) {
     this.postRepository = postRepository;
-    this.hospitalRepository = hospitalRepository;
-    this.patientRepository = patientRepository;
     this.userRepository = userRepository;
+    this.nameWordRepository = nameWordRepository;
+    this.keywordRepository = keywordRepository;
     this.storage = new Storage({
       projectId: `${process.env.PROJECT_ID}`,
       keyFilename: `${process.env.KEYPATH}`,
@@ -63,12 +56,34 @@ export class PostService {
       },
     });
 
+    const nameWords = await this.nameWordRepository
+      .createQueryBuilder('nameWord')
+      .select('nameWord.word')
+      .leftJoin('nameWord.user', 'user')
+      .where('user.id = :userId', { userId })
+      .execute();
+
+    const keywords = await this.keywordRepository
+      .createQueryBuilder('keyword')
+      .select('keyword.word')
+      .leftJoin('keyword.user', 'user')
+      .where('user.id = :userId', { userId })
+      .execute();
+
     blobStream.on('error', (err) => {
       console.error(err);
     });
 
+    let sttResult = '';
     blobStream.on('finish', async () => {
-      await analyzeVideoTranscript(`${filename}`, video.buffer);
+      sttResult = analyzeVideoTranscript(
+        `${filename}`,
+        video.buffer,
+        nameWords,
+        keywords,
+      );
+
+      await this.keywordService.extract(sttResult, userId, user[0].patient.id);
 
       const result = await this.postRepository
         .createQueryBuilder()
