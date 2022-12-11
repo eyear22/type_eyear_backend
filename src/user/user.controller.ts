@@ -21,6 +21,8 @@ import { PostsResponse } from './dto/posts-response.dto';
 import { ConnectPatientDto } from './dto/connect-patient.dto';
 import { ConnectPatientResponse } from './dto/connect-patient-response.dto';
 import { HospitalListResponse } from './dto/hospital-list-response.dto';
+import { ConnectedPatientResponse } from './dto/connected-patient-response.dto';
+import { BaseResponse } from 'src/utils/swagger/base-response.dto';
 
 @Controller('user')
 @ApiTags('User API')
@@ -132,5 +134,33 @@ export class UserController {
       hospitals: hospitals,
     };
     return res.status(HttpStatus.OK).send(result);
+  }
+
+  @Get('patient')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '등록된 수신인 확인 API',
+    description: '[개인] 자신과 연결되어 있는 환자의 정보를 확인할 수 있는 API',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'success',
+    type: ConnectedPatientResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: '등록된 환자가 없는 경우',
+  })
+  async getPatient(@Req() req: Request, @Res() res: Response) {
+    const data = await this.userService.getPatient(req.user.id);
+    if (data) {
+      const result = {
+        message: 'success',
+        result: data,
+      };
+      return res.status(HttpStatus.OK).send(result);
+    } else {
+      return res.status(HttpStatus.NO_CONTENT).send();
+    }
   }
 }
