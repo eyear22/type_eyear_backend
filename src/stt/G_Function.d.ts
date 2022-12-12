@@ -6,4 +6,4 @@ export function analyzeVideoTranscript(
   video: Buffer,
   nameWords: string[],
   keywords: string[],
-): string;
+): Promise<string>;
