@@ -169,30 +169,30 @@ export async function analyzeVideoTranscript(
     console.log('write end!');
   });
 
-  // // 영상 파일을 로컬에 받아옴
-  // await fs.writeFile('input.mp4', file, function (error) {
-  //   //function(error) 추가해야 함
-  //   console.log('save input');
-  // });
+  // 영상 파일을 로컬에 받아옴
+  await fs.writeFile('input.mp4', file, function (error) {
+    //function(error) 추가해야 함
+    console.log('save input');
+  });
 
   // // 현재 영상 파일과 자막 파일 합치기 - 로컬
   await ffmpeg(input_path)
     .videoCodec('libx264')
     .size('1280x720')
-    //.outputOptions([`-vf subtitles=${subtitlePath}`, '-movflags faststart'])
+    .outputOptions([`-vf subtitles=${subtitlePath}`, '-movflags faststart'])
     .save(output_path)
     .on('error', function (err) {
       console.log('An error occurred:' + err.message);
     })
     .on('end', function () {
       console.log('Processing finished!');
-      // fs.unlink(subtitlePath, function (err) {
-      //   if (err) {
-      //     console.log('Error : ', err);
-      //   } else {
-      //     console.log('삭제 완료!');
-      //   }
-      // });
+      fs.unlink(subtitlePath, function (err) {
+        if (err) {
+          console.log('Error : ', err);
+        } else {
+          console.log('삭제 완료!');
+        }
+      });
       // 영상 파일을 로컬에 받아옴
       fs.readFile(output_path, function (error, data) {
         if (error) {
