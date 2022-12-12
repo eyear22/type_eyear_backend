@@ -74,16 +74,15 @@ export class PostService {
       console.error(err);
     });
 
-    let sttResult = '';
     blobStream.on('finish', async () => {
-      sttResult = analyzeVideoTranscript(
+      analyzeVideoTranscript(
         `${filename}`,
         video.buffer,
         nameWords,
         keywords,
-      );
-
-      await this.keywordService.extract(sttResult, userId, user[0].patient.id);
+      ).then(async (result) => {
+        await this.keywordService.extract(result, userId, user[0].patient.id);
+      });
 
       const result = await this.postRepository
         .createQueryBuilder()
@@ -91,14 +90,14 @@ export class PostService {
         .into(Post)
         .values({
           video: () =>
-            `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.mp4`,
+            `'https://storage.googleapis.com/${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.mp4'`,
           text: () =>
-            `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.txt`,
-          check: () => `${false}`,
+            `'https://storage.googleapis.com/${process.env.GCLOUD_STORAGE_BUCKET}/${nowDate}.txt'`,
+          check: () => `${0}`,
           stampNumber: () => `${createpostDto.stampNumber}`,
           cardNumber: () => `'${createpostDto.cardNumber}'`,
-          hospital: () => `'${user[0].patient.id}'`,
-          user: () => `'${user[0].patient.id}'`,
+          hospital: () => `'${user[0].hospital.id}'`,
+          user: () => `'${user[0].id}'`,
           patient: () => `'${user[0].patient.id}'`,
         })
         .execute();
