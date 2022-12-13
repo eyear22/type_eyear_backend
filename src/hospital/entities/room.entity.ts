@@ -17,7 +17,7 @@ export class Room extends Common {
   @Column()
   icuCheck: boolean;
 
-  @ManyToOne(() => Ward, (ward) => ward.rooms)
+  @ManyToOne(() => Ward, (ward) => ward.rooms, { onDelete: 'CASCADE' })
   ward: Ward;
 
   @OneToMany(() => Patient, (patient) => patient.room)

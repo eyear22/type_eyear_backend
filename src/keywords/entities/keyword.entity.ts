@@ -11,9 +11,11 @@ export class Keyword extends Common {
   @Column({ type: 'double' })
   rank: number;
 
-  @ManyToOne(() => User, (user) => user.keywords)
+  @ManyToOne(() => User, (user) => user.keywords, { onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => Patient, (patient) => patient.keywords)
+  @ManyToOne(() => Patient, (patient) => patient.keywords, {
+    onDelete: 'CASCADE',
+  })
   patient: Patient;
 }

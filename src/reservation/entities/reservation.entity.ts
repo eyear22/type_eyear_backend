@@ -18,12 +18,16 @@ export class Reservation extends Common {
   @Column({ type: 'int', default: 0 })
   approveCheck: number;
 
-  @ManyToOne(() => Hospital, (hospital) => hospital.reservations)
+  @ManyToOne(() => Hospital, (hospital) => hospital.reservations, {
+    onDelete: 'CASCADE',
+  })
   hospital: Hospital;
 
-  @ManyToOne(() => User, (user) => user.reservations)
+  @ManyToOne(() => User, (user) => user.reservations, { onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => Patient, (patient) => patient.reservations)
+  @ManyToOne(() => Patient, (patient) => patient.reservations, {
+    onDelete: 'CASCADE',
+  })
   patient: Patient;
 }

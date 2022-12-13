@@ -21,12 +21,14 @@ export class Post extends Common {
   @Column({ type: 'int' })
   cardNumber: number;
 
-  @ManyToOne(() => Hospital, (hospital) => hospital.posts)
+  @ManyToOne(() => Hospital, (hospital) => hospital.posts, {
+    onDelete: 'CASCADE',
+  })
   hospital: Hospital;
 
-  @ManyToOne(() => User, (user) => user.posts)
+  @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => Patient, (patient) => patient.posts)
+  @ManyToOne(() => Patient, (patient) => patient.posts, { onDelete: 'CASCADE' })
   patient: Patient;
 }

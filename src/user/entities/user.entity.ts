@@ -43,7 +43,9 @@ export class User extends Common {
   @JoinColumn()
   patient: Patient;
 
-  @ManyToOne(() => Hospital, (hospital) => hospital.users)
+  @ManyToOne(() => Hospital, (hospital) => hospital.users, {
+    onDelete: 'CASCADE',
+  })
   hospital: Hospital;
 
   @OneToMany(() => Keyword, (keyword) => keyword.user)

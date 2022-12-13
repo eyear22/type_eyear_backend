@@ -7,6 +7,6 @@ export class NameWord extends Common {
   @Column({ type: 'varchar' })
   word: string;
 
-  @ManyToOne(() => User, (user) => user.nameWords)
+  @ManyToOne(() => User, (user) => user.nameWords, { onDelete: 'CASCADE' })
   user: User;
 }
