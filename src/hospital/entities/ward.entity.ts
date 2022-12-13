@@ -9,7 +9,9 @@ export class Ward extends Common {
   @Column({ type: 'varchar', length: 50 })
   name: string;
 
-  @ManyToOne(() => Hospital, (hospital) => hospital.wards)
+  @ManyToOne(() => Hospital, (hospital) => hospital.wards, {
+    onDelete: 'CASCADE',
+  })
   hospital: Hospital;
 
   @OneToMany(() => Room, (room) => room.ward)

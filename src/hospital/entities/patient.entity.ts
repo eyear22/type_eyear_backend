@@ -24,13 +24,15 @@ export class Patient extends Common {
   @Column({ type: 'varchar' })
   infoNumber: string;
 
-  @ManyToOne(() => Hospital, (hospital) => hospital.patients)
+  @ManyToOne(() => Hospital, (hospital) => hospital.patients, {
+    onDelete: 'CASCADE',
+  })
   hospital: Hospital;
 
-  @ManyToOne(() => Ward, (ward) => ward.patients)
+  @ManyToOne(() => Ward, (ward) => ward.patients, { onDelete: 'CASCADE' })
   ward: Ward;
 
-  @ManyToOne(() => Room, (room) => room.patients)
+  @ManyToOne(() => Room, (room) => room.patients, { onDelete: 'CASCADE' })
   room: Room;
 
   @OneToMany(() => Post, (post) => post.patient)
