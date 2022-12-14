@@ -16,8 +16,7 @@ export abstract class PostDetailResponse extends BaseResponse {
       check: false,
       stampNumber: 1,
       cardNumber: 1,
-      createdAt: '2022-11-26T11:32:49.244Z',
-      updatedAt: '2022-11-26T11:32:49.244Z',
+      createdAt: '2022-11-26',
     },
   })
   post: Post;
