@@ -41,6 +41,8 @@ import { NameWord } from './keywords/entities/nameWord.entity';
             NameWord,
           ],
           synchronize: true, // Fix me : set this value to false when deploy
+          timezone: 'z',
+          charset: 'utf8mb4',
         };
       },
     }),
