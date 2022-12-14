@@ -14,6 +14,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { Hospital } from 'src/hospital/entities/hospital.entity';
 import { Patient } from 'src/hospital/entities/patient.entity';
 import { User } from 'src/user/entities/user.entity';
+import e from 'express';
 
 @Injectable()
 export class PostService {
@@ -94,16 +95,37 @@ export class PostService {
     blobStream.end(video.buffer);
   }
 
-  async getPostDetail(postId: number) {
-    // todo: user 정보 일치하는지 확인
-    const post = await this.postRepository.findOneBy({ id: postId });
-    if (!post) {
+  async getPostDetail(postId: number, userId: number) {
+    const post = await this.postRepository
+      .createQueryBuilder('post')
+      .where('post.id =:postId', { postId })
+      .andWhere('post.userId =:userId', { userId })
+      .execute();
+
+    if (post.length === 0) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
         message: ['not existed post'],
         error: 'Not Found',
       });
+    } else if (post.length > 1) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: ['유효하지 않은 우편 및 개인 정보입니다.'],
+        error: 'Bad Request',
+      });
     }
-    return post;
+
+    const result = {
+      id: post[0].post_id,
+      video: post[0].post_video,
+      text: post[0].post_text,
+      check: post[0].post_check,
+      stampNumber: post[0].post_stampNumber,
+      cardNumber: post[0].post_cardNumber,
+      createdAt: post[0].post_createdAt.toISOString().split('T')[0],
+    };
+
+    return result;
   }
 }
