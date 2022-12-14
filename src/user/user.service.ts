@@ -192,7 +192,7 @@ export class UserService {
           id: user.patient.id,
           name: user.patient.name,
           number: user.patient.patNumber,
-          inDate: user.patient.inDate,
+          inDate: user.patient.inDate.toISOString().split('T')[0],
           infoNumber: user.patient.infoNumber.substring(0, 8) + '******',
         },
         hospital: {
