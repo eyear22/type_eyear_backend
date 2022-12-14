@@ -31,7 +31,10 @@ export class ReservationController {
     summary: '예약 등록 API',
     description: '예약 등록 ',
   })
-  @ApiCreatedResponse({ description: '예약 신청한다.', type: String })
+  @ApiCreatedResponse({
+    description: '예약 신청한다.',
+    type: ReservationResponse,
+  })
   async createReservation(
     @Body() createReservationDto: CreateReservationDto,
     @Req() req: Request,
@@ -41,7 +44,10 @@ export class ReservationController {
       createReservationDto,
       req.user.id,
     );
-
-    return res.status(HttpStatus.CREATED).send('ok');
+    const result = {
+      message: 'success',
+      reservation: reservation,
+    };
+    return res.status(HttpStatus.CREATED).json(result);
   }
 }
