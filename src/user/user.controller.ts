@@ -22,7 +22,6 @@ import { ConnectPatientDto } from './dto/connect-patient.dto';
 import { ConnectPatientResponse } from './dto/connect-patient-response.dto';
 import { HospitalListResponse } from './dto/hospital-list-response.dto';
 import { ConnectedPatientResponse } from './dto/connected-patient-response.dto';
-import { BaseResponse } from 'src/utils/swagger/base-response.dto';
 
 @Controller('user')
 @ApiTags('User API')
@@ -71,7 +70,7 @@ export class UserController {
   }
 
   @Get('posts')
-  // @UseGuards(JwtAuthGuard) // fix: 로그인 연결 후 수정
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '개인 보낸 우편 리스트 API',
     description: '보낸 우편 리스트 확인',
@@ -81,8 +80,8 @@ export class UserController {
     description: 'success',
     type: PostsResponse,
   })
-  async getPosts(@Res() res: Response) {
-    const posts = await this.userService.getPosts();
+  async getPosts(@Req() req: Request, @Res() res: Response) {
+    const posts = await this.userService.getPosts(req.user.id);
     const result = {
       message: 'success',
       posts: posts,

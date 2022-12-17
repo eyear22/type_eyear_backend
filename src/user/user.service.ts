@@ -96,16 +96,19 @@ export class UserService {
     return result;
   }
 
-  async getPosts(): Promise<Post> {
-    // const user = this.userRepository.findOneBy({ email });
+  async getPosts(userId: number) {
     const posts = await this.postRepository
       .createQueryBuilder('post')
       .select('post.id')
       .addSelect('post.stampNumber')
       .addSelect('post.cardNumber')
       .addSelect('post.createdAt')
-      // .where('post.user = :user', { user }) // fix: 로그인 연결 후 user 정보 이용해서 검색
+      .where('post.userId = :userId', { userId })
       .execute();
+
+    for (const post of posts) {
+      post.post_createdAt = post.post_createdAt.toISOString().split('T')[0];
+    }
 
     return posts;
   }
@@ -143,7 +146,6 @@ export class UserService {
       .execute();
 
     if (users.length > 0) {
-      console.log(users);
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
         message: ['이미 연결이 완료된 환자입니다.'],
@@ -190,7 +192,7 @@ export class UserService {
           id: user.patient.id,
           name: user.patient.name,
           number: user.patient.patNumber,
-          inDate: user.patient.inDate,
+          inDate: user.patient.inDate.toISOString().split('T')[0],
           infoNumber: user.patient.infoNumber.substring(0, 8) + '******',
         },
         hospital: {

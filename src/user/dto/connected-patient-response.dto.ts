@@ -18,9 +18,9 @@ class Patient {
 
   @ApiProperty({
     description: '환자 입원 날짜',
-    example: '2019-10-12T15:00:00.000Z',
+    example: '2019-10-12',
   })
-  inDate: Date;
+  inDate: string;
 
   @ApiProperty({ description: '환자 주민 번호', example: '661002-1******' })
   infoNumber: string;
@@ -65,7 +65,7 @@ export abstract class ConnectedPatientResponse extends BaseResponse {
       patient: {
         id: 5,
         number: 'BA13575',
-        inDate: '2019-10-12T15:00:00.000Z',
+        inDate: '2019-10-12',
         name: '이필재',
         infoNumber: '661002-1******',
       },

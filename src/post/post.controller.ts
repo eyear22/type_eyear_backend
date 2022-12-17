@@ -61,13 +61,18 @@ export class PostController {
   })
   async getPostDetail(
     @Param() param: PostDetailParamDto,
+    @Req() req: Request,
     @Res() res: Response,
   ) {
     if (!param) {
       return new BadRequestException('required parameter');
     }
 
-    const post = await this.postService.getPostDetail(param.postId);
+    const post = await this.postService.getPostDetail(
+      param.postId,
+      req.user.id,
+    );
+
     const result = {
       message: 'success',
       post: post,
