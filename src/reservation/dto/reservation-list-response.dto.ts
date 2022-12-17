@@ -21,6 +21,17 @@ class ReservationData {
   reservation_approveCheck: number;
 }
 
+class ALlReservationResponseData {
+  @ApiProperty({ description: '승인 여부 확인 안함' })
+  '0': ReservationData[];
+
+  @ApiProperty({ description: '승인' })
+  '1': ReservationData[];
+
+  @ApiProperty({ description: '거부' })
+  '-1': ReservationData[];
+}
+
 export abstract class ReservationListResponse extends BaseResponse {
   constructor() {
     super();
@@ -28,24 +39,46 @@ export abstract class ReservationListResponse extends BaseResponse {
 
   @ApiProperty({
     description: 'response result',
-    example: [
-      {
-        reservation_id: 7,
-        reservation_createdAt: '22/12/15',
-        reservation_reservationDate: '22/12/13',
-        reservation_timetableIndex: 0,
-        reservation_faceToface: 1,
-        reservation_approveCheck: 1,
-      },
-      {
-        reservation_id: 8,
-        reservation_createdAt: '22/12/15',
-        reservation_reservationDate: '22/12/23',
-        reservation_timetableIndex: 0,
-        reservation_faceToface: 1,
-        reservation_approveCheck: 1,
-      },
-    ],
+    example: {
+      '0': [
+        {
+          reservation_id: 10,
+          reservation_createdAt: '22/12/15',
+          reservation_reservationDate: '22/12/02',
+          reservation_timetableIndex: 0,
+          reservation_faceToface: 1,
+          reservation_approveCheck: 0,
+        },
+      ],
+      '1': [
+        {
+          reservation_id: 7,
+          reservation_createdAt: '22/12/15',
+          reservation_reservationDate: '22/12/13',
+          reservation_timetableIndex: 0,
+          reservation_faceToface: 1,
+          reservation_approveCheck: 1,
+        },
+        {
+          reservation_id: 8,
+          reservation_createdAt: '22/12/15',
+          reservation_reservationDate: '22/12/23',
+          reservation_timetableIndex: 0,
+          reservation_faceToface: 1,
+          reservation_approveCheck: 1,
+        },
+      ],
+      '-1': [
+        {
+          reservation_id: 11,
+          reservation_createdAt: '22/12/15',
+          reservation_reservationDate: '22/12/11',
+          reservation_timetableIndex: 0,
+          reservation_faceToface: 1,
+          reservation_approveCheck: -1,
+        },
+      ],
+    },
   })
-  reservations: ReservationData[];
+  reservations: ALlReservationResponseData;
 }

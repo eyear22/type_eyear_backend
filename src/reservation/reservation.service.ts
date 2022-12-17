@@ -105,6 +105,8 @@ export class ReservationService {
       .where('reservation.user =:userId', { userId })
       .execute();
 
+    const result = { '-1': [], '0': [], '1': [] };
+
     for (const reservation of reservations) {
       reservation.reservation_reservationDate = this.formatDate(
         reservation.reservation_reservationDate,
@@ -113,9 +115,11 @@ export class ReservationService {
       reservation.reservation_createdAt = this.formatDate(
         reservation.reservation_createdAt,
       );
+
+      result[reservation.reservation_approveCheck].push(reservation);
     }
 
-    return reservations;
+    return result;
   }
 
   formatDate(dateTypeData: Date) {
