@@ -92,4 +92,36 @@ export class ReservationService {
 
     return { id: result.identifiers[0].id };
   }
+
+  async getReservationList(userId: number) {
+    const reservations = await this.reservationRepository
+      .createQueryBuilder('reservation')
+      .select('reservation.id')
+      .addSelect('reservation.createdAt')
+      .addSelect('reservation.reservationDate')
+      .addSelect('reservation.timetableIndex')
+      .addSelect('reservation.faceToface')
+      .addSelect('reservation.approveCheck')
+      .where('reservation.user =:userId', { userId })
+      .execute();
+
+    for (const reservation of reservations) {
+      reservation.reservation_reservationDate = this.formatDate(
+        reservation.reservation_reservationDate,
+      );
+
+      reservation.reservation_createdAt = this.formatDate(
+        reservation.reservation_createdAt,
+      );
+    }
+
+    return reservations;
+  }
+
+  formatDate(dateTypeData: Date) {
+    const temp1 = dateTypeData.toISOString().split('T')[0];
+    const temp2 = temp1.split('-');
+
+    return temp2[0].substring(2) + '/' + temp2[1] + '/' + temp2[2];
+  }
 }
