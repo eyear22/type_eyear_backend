@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
@@ -6,7 +11,6 @@ import { Storage } from '@google-cloud/storage';
 import { analyzeVideoTranscript } from '../stt/G_Function';
 import { CreatePostDto } from './dto/create-post.dto';
 import { User } from 'src/user/entities/user.entity';
-import e from 'express';
 import { Keyword } from 'src/keywords/entities/keyword.entity';
 import { NameWord } from 'src/keywords/entities/nameWord.entity';
 import { KeywordsService } from 'src/keywords/keywords.service';
