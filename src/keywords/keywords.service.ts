@@ -27,7 +27,6 @@ export class KeywordsService {
       const regExp = /\(([^)]+)\)/;
       const keywordsArray = keywords.split(regExp);
 
-      let i = 0;
       keywordsArray.forEach((value, index) => {
         if (index % 2 === 1) {
           const temp = value.split(', ');
@@ -37,8 +36,6 @@ export class KeywordsService {
               word: temp[0].slice(1, -1),
               rank: Number(temp[1]),
             });
-
-            i += 1;
           }
         }
       });

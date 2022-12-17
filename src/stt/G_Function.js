@@ -2,7 +2,7 @@
 // Imports the Google Cloud Video Intelligence library
 const videoIntelligence = require('@google-cloud/video-intelligence');
 const fs = require('fs');
-const { format, parseISO, intervalToDuration } = require('date-fns');
+const { intervalToDuration } = require('date-fns');
 const ffmpeg = require('fluent-ffmpeg');
 
 const { Storage } = require('@google-cloud/storage');
@@ -24,25 +24,13 @@ try {
 }
 
 // DB에 해당 값 받아오려면 인수 변경해야함
-export async function analyzeVideoTranscript(filename, file) {
-  console.log('js 파일 들어왔어?');
-  // const keywordsArray = await Keyword.findOne({
-  //   user_id: user_id,
-  //   pat_id: patient_id,
-  // });
-
-  // const commonWords = await Commonword.findOne({
-  //   pat_id: patient_id,
-  // });
-
-  // let keyword_load = [];
-  // if (keywordsArray !== null) {
-  //   keyword_load = keywordsArray.words;
-  // }
-
-  // if (commonWords !== null) {
-  //   keyword_load.concat(commonWords.words);
-  // }
+export async function analyzeVideoTranscript(
+  filename,
+  file,
+  nameWords,
+  keywords,
+) {
+  console.log('G_Functions.js -> analyzeVideoTranscript');
 
   const gcsUri = `gs://${process.env.GCLOUD_STORAGE_BUCKET}/${filename}`;
   const videoContext = {
@@ -50,17 +38,11 @@ export async function analyzeVideoTranscript(filename, file) {
       sampleRateHertz: 2200,
       languageCode: 'ko-KR',
       enableAutomaticPunctuation: true, // 자동 구두점 활성화
-      speechContexts:[{
-        phrases: [
-          '승석이랑',
-          '승석이가',
-          '대현이',
-          '승석이',
-          '내림이는',
-          '게임',
-          '취업 했더라고',
-        ]
-      }],
+      speechContexts: [
+        {
+          phrases: [nameWords, keywords],
+        },
+      ],
     },
   };
 
@@ -84,30 +66,27 @@ export async function analyzeVideoTranscript(filename, file) {
     }
   }
 
-  // // 추출된 STT 데이터 텍스트 파일 생성
-  // let text = filename.split('.');
-  // text = text.map((element) => element.trim());
-  // const textName = `${text[0]}.txt`;
-  // const textPath = `./subtitle/${textName}`;
+  // 추출된 STT 데이터 텍스트 파일 생성
+  let text = filename.split('.');
+  text = text.map((element) => element.trim());
+  const textName = `${text[0]}.txt`;
+  const textPath = `./subtitle/${textName}`;
 
-  // // 다 생성한 srt 파일을 로컬에 임시 저장
-  // await fs.writeFile(textPath, transcription, function (error) {
-  //   //function(error) 추가해야 함
-  //   console.log('write end!');
-  // });
+  // 다 생성한 srt 파일을 로컬에 임시 저장
+  await fs.writeFile(textPath, transcription, (error) => {
+    //function(error) 추가해야 함
+    console.log('write end!');
+  });
 
-  // await storage.bucket(process.env.GCLOUD_STORAGE_BUCKET).upload(textPath, {
-  //   destination: `${textName}`,
-  // });
+  await storage.bucket(process.env.GCLOUD_STORAGE_BUCKET).upload(textPath, {
+    destination: `${textName}`,
+  });
 
-  // await fs.unlink(textPath, function (err) {
-  //   if (err) {
-  //     console.log('Error : ', err);
-  //   }
-  // });
-
-  // // 파이썬 파일에 보내기
-  // keyword(transcription, user_id, patient_id);
+  await fs.unlink(textPath, function (err) {
+    if (err) {
+      console.log('Error : ', err);
+    }
+  });
 
   const allSentence = annotationResults.speechTranscriptions
     .map((speechTranscription) => {
@@ -190,30 +169,30 @@ export async function analyzeVideoTranscript(filename, file) {
     console.log('write end!');
   });
 
-  // // 영상 파일을 로컬에 받아옴
-  // await fs.writeFile('input.mp4', file, function (error) {
-  //   //function(error) 추가해야 함
-  //   console.log('save input');
-  // });
+  // 영상 파일을 로컬에 받아옴
+  await fs.writeFile('input.mp4', file, function (error) {
+    //function(error) 추가해야 함
+    console.log('save input');
+  });
 
   // // 현재 영상 파일과 자막 파일 합치기 - 로컬
   await ffmpeg(input_path)
     .videoCodec('libx264')
     .size('1280x720')
-    //.outputOptions([`-vf subtitles=${subtitlePath}`, '-movflags faststart'])
+    .outputOptions([`-vf subtitles=${subtitlePath}`, '-movflags faststart'])
     .save(output_path)
     .on('error', function (err) {
       console.log('An error occurred:' + err.message);
     })
     .on('end', function () {
       console.log('Processing finished!');
-      // fs.unlink(subtitlePath, function (err) {
-      //   if (err) {
-      //     console.log('Error : ', err);
-      //   } else {
-      //     console.log('삭제 완료!');
-      //   }
-      // });
+      fs.unlink(subtitlePath, function (err) {
+        if (err) {
+          console.log('Error : ', err);
+        } else {
+          console.log('삭제 완료!');
+        }
+      });
       // 영상 파일을 로컬에 받아옴
       fs.readFile(output_path, function (error, data) {
         if (error) {
@@ -232,4 +211,6 @@ export async function analyzeVideoTranscript(filename, file) {
         blobStream.end(data);
       });
     });
+
+  return transcription;
 }
