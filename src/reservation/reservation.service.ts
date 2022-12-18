@@ -103,6 +103,7 @@ export class ReservationService {
       .addSelect('reservation.faceToface')
       .addSelect('reservation.approveCheck')
       .where('reservation.user =:userId', { userId })
+      .orderBy('reservation.reservationDate', 'ASC')
       .execute();
 
     const result = { '-1': [], '0': [], '1': [] };
