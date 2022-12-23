@@ -1,5 +1,5 @@
 import { Post } from '../../post/entities/post.entity';
-import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Hospital } from './hospital.entity';
 import { Room } from './room.entity';
 import { Ward } from './ward.entity';
@@ -12,7 +12,7 @@ export class Patient extends Common {
   @Column({ type: 'varchar', length: 50 })
   name: string;
 
-  @Column({ type: 'varchar', length: 50, unique: true })
+  @Column({ type: 'varchar', length: 50 })
   patNumber: string;
 
   @Column()
@@ -27,12 +27,15 @@ export class Patient extends Common {
   @ManyToOne(() => Hospital, (hospital) => hospital.patients, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn()
   hospital: Hospital;
 
   @ManyToOne(() => Ward, (ward) => ward.patients, { onDelete: 'CASCADE' })
+  @JoinColumn()
   ward: Ward;
 
   @ManyToOne(() => Room, (room) => room.patients, { onDelete: 'CASCADE' })
+  @JoinColumn()
   room: Room;
 
   @OneToMany(() => Post, (post) => post.patient)
