@@ -1,5 +1,5 @@
 import { Common } from '../../entities/common.entity';
-import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Hospital } from './hospital.entity';
 import { Patient } from './patient.entity';
 import { Room } from './room.entity';
@@ -12,6 +12,7 @@ export class Ward extends Common {
   @ManyToOne(() => Hospital, (hospital) => hospital.wards, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn()
   hospital: Hospital;
 
   @OneToMany(() => Room, (room) => room.ward)

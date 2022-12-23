@@ -6,6 +6,7 @@ import { Common } from 'src/entities/common.entity';
 import { Exclude } from 'class-transformer';
 import { Reservation } from 'src/reservation/entities/reservation.entity';
 import { User } from 'src/user/entities/user.entity';
+import { Room } from './room.entity';
 
 @Entity()
 export class Hospital extends Common {
@@ -42,4 +43,7 @@ export class Hospital extends Common {
 
   @OneToMany(() => User, (user) => user.hospital)
   users: User[];
+
+  @OneToMany(() => Room, (room) => room.hospital)
+  rooms: Room[];
 }
