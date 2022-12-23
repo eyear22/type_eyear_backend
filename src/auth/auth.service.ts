@@ -103,4 +103,11 @@ export class AuthService {
       refresh_token,
     };
   }
+
+  async logout(user: any) {
+    await this.userRepository.update(
+      { id: user.id },
+      { currentHashedRefreshToken: null },
+    );
+  }
 }
