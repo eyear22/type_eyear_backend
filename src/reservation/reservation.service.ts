@@ -1,6 +1,5 @@
 import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateReservationDto } from './dto/create-reservation.dto';
@@ -19,10 +18,21 @@ export class ReservationService {
     this.userRepository = userRepository;
   }
 
+  OFFSET = 1000 * 60 * 60 * 9;
   async createReservation(
     createReservationDto: CreateReservationDto,
     userId: number,
   ) {
+    const today = new Date(new Date().getTime() + this.OFFSET);
+
+    if (today >= new Date(createReservationDto.reservationDate)) {
+      throw new ForbiddenException({
+        statusCode: HttpStatus.FORBIDDEN,
+        message: ['오늘 이후 날짜만 예약 가능합니다.'],
+        error: 'Forbidden',
+      });
+    }
+
     const user = await this.userRepository.findOne({
       where: {
         id: userId,
@@ -32,6 +42,14 @@ export class ReservationService {
         hospital: true,
       },
     });
+
+    if (user.patient === null || user.hospital === null) {
+      throw new ForbiddenException({
+        statusCode: HttpStatus.FORBIDDEN,
+        message: ['수신인 등록이 되어있지 않습니다.'],
+        error: 'Forbidden',
+      });
+    }
 
     const isExist = await this.reservationRepository
       .createQueryBuilder('reservation')
