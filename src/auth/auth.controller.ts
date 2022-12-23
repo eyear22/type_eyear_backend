@@ -9,8 +9,6 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { BaseResponse } from 'src/utils/swagger/base-response.dto';
-
 import { AuthService } from './auth.service';
 import { LoginResponse } from './dto/login-response.dto';
 import { LoginUserDto } from './dto/login.user.dto';
@@ -54,5 +52,15 @@ export class AuthController {
   @Get('/refresh')
   async getToken(@Req() req) {
     return await this.authService.refreshTokens(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('logout')
+  @ApiOperation({
+    summary: '로그아웃 API',
+    description: '로그아웃 --> 프론트에서 저장한 토큰을 삭제해주세요!!',
+  })
+  async logout(@Req() req: Request) {
+    return await this.authService.logout(req.user);
   }
 }
